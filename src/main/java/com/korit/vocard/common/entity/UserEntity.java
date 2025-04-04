@@ -1,5 +1,7 @@
 package com.korit.vocard.common.entity;
 
+import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -78,4 +80,17 @@ public class UserEntity {
      */
     @Column(name = "is_verified")
     private boolean isVerified;
+
+    /**
+     * description: 회원가입 요청 DTO를 통한 사용자 엔티티 생성
+     *
+     * @param dto {@link SignUpRequestDto} 회원가입 요청 정보
+     */
+    public UserEntity(SignUpRequestDto dto) {
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+        this.nickname = dto.getNickname();
+        this.isVerified = false;
+    }
+    
 }
