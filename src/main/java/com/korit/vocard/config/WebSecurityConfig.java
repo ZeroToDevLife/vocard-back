@@ -73,7 +73,7 @@ public class WebSecurityConfig {
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       // description: 인가(Authorization) 설정
       .authorizeHttpRequests(request -> request
-        .requestMatchers("/api/v1/auth/**").permitAll()
+        .requestMatchers("/api/v1/auth/**", "/api/v1/utils/**").permitAll()
         .anyRequest().authenticated()
       )
       // description: 인증 실패 처리 설정
