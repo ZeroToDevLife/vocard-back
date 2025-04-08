@@ -1,24 +1,22 @@
 package com.korit.vocard.service.implement;
 
-import java.util.Random;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.korit.vocard.common.dto.request.auth.EmailAuthSendRequestDto;
 import com.korit.vocard.common.dto.request.auth.EmailAuthVerifyRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.auth.EmailAuthResponseDto;
+import com.korit.vocard.common.dto.response.utils.SendVerificationEmailResponseDto;
 import com.korit.vocard.common.entity.EmailAuthEntity;
 import com.korit.vocard.common.entity.UserEntity;
+import com.korit.vocard.common.util.RandomUtils;
 import com.korit.vocard.repository.EmailAuthRepository;
 import com.korit.vocard.repository.UserRepository;
 import com.korit.vocard.service.EmailAuthService;
+import com.korit.vocard.service.EmailSendService;
 
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -32,7 +30,7 @@ public class EmailAuthServiceImplement implements EmailAuthService {
 
   private final EmailAuthRepository emailAuthRepository;
   private final UserRepository userRepository;
-  private final JavaMailSender javaMailSender;
+  private final EmailSendService emailSendService;
 
   /**
    * description: 이메일 인증 코드 발송
@@ -51,31 +49,21 @@ public class EmailAuthServiceImplement implements EmailAuthService {
   @Override
   public ResponseEntity<ResponseDto> sendEmail(EmailAuthSendRequestDto dto, String email) {
 
-    Integer code = new Random().nextInt(900000) + 100000;
+    // RandomUtils를 사용하여 6자리 인증 코드 생성 (100000~999999)
+    Integer code = RandomUtils.randomNumber(100000, 999999);
 
     try {
-
-      MimeMessage message = javaMailSender.createMimeMessage();
-      MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-    
-      helper.setTo(email);
-      helper.setSubject("[Vocard] 이메일 인증 코드입니다.");
-      helper.setText("""
-          <div style="font-family: sans-serif; padding: 10px;">
-            <h2>안녕하세요! Vocard 인증 안내입니다.</h2>
-            <p>아래 코드를 인증 페이지에 입력해주세요:</p>
-            <h3 style="color: blue;">인증 코드: <strong>"""
-             + code + """
-             </strong></h3>
-          </div>
-          """
-          , true); // true → HTML 사용
+      ResponseEntity<? super SendVerificationEmailResponseDto> emailResponse = 
+          emailSendService.sendVerificationEmail(email, code);
       
-      javaMailSender.send(message);
+      if (!emailResponse.getStatusCode().is2xxSuccessful()) {
+        return ResponseDto.emailSendError();
+      }
 
+      // 인증 코드 저장
       EmailAuthEntity emailAuthEntity = new EmailAuthEntity(
-      email,
-      code
+        email,
+        code
       );
         
       emailAuthRepository.save(emailAuthEntity);
@@ -86,7 +74,6 @@ public class EmailAuthServiceImplement implements EmailAuthService {
     }
 
     return ResponseDto.success(HttpStatus.CREATED);
-
   }
 
   /**
@@ -128,7 +115,5 @@ public class EmailAuthServiceImplement implements EmailAuthService {
     }
 
     return EmailAuthResponseDto.success(userEntity.isVerified());
-
   }
-  
 }

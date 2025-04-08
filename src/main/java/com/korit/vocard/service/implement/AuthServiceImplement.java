@@ -7,14 +7,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.korit.vocard.common.dto.request.auth.EmailCheckRequestDto;
+import com.korit.vocard.common.dto.request.auth.ResetPasswordRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignInRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.auth.SignInResponseDto;
+import com.korit.vocard.common.dto.response.utils.GetTemporaryPasswordResponseDto;
+import com.korit.vocard.common.dto.response.utils.SendTemporaryPasswordEmailResponseDto;
 import com.korit.vocard.common.entity.UserEntity;
 import com.korit.vocard.provider.JwtProvider;
 import com.korit.vocard.repository.UserRepository;
 import com.korit.vocard.service.AuthService;
+import com.korit.vocard.service.EmailSendService;
+import com.korit.vocard.service.PasswordCreateService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +34,8 @@ public class AuthServiceImplement implements AuthService{
 
   private final UserRepository userRepository;
   private final JwtProvider jwtProvider;
+  private final EmailSendService emailSendService;
+  private final PasswordCreateService passwordCreateService;
   private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   /**
@@ -143,4 +150,54 @@ public class AuthServiceImplement implements AuthService{
 
   }
   
+  /**
+   * description: 비밀번호 재설정 구현
+   * 
+   * <p>
+   * <ul>
+   * <li>이메일로 사용자 조회</li>
+   * <li>임시 비밀번호 생성 (영문 대소문자, 숫자, 특수문자 포함)</li>
+   * <li>임시 비밀번호 이메일 전송</li>
+   * <li>암호화된 비밀번호로 사용자 정보 업데이트</li>
+   * </ul>
+   * </p>
+   *
+   * @param dto {@link ResetPasswordRequestDto} 비밀번호 재설정 요청 정보
+   * @return 성공 시 {@link HttpStatus#OK} (200), 실패 시 오류 응답
+   */
+  @Override
+  public ResponseEntity<ResponseDto> resetPassword(ResetPasswordRequestDto dto) {
+    try {
+      String email = dto.getEmail();
+      UserEntity userEntity = userRepository.findByEmail(email);
+      if (userEntity == null) return ResponseDto.userNotExist();
+      
+      ResponseEntity<? super GetTemporaryPasswordResponseDto> passwordResponse = 
+          passwordCreateService.generateTemporaryPassword();
+      
+      if (!passwordResponse.getStatusCode().is2xxSuccessful()) {
+        return ResponseDto.databaseError();
+      }
+      
+      GetTemporaryPasswordResponseDto passwordDto = (GetTemporaryPasswordResponseDto) passwordResponse.getBody();
+      String temporaryPassword = passwordDto.getTemporaryPassword();
+      
+      ResponseEntity<? super SendTemporaryPasswordEmailResponseDto> emailResponse = 
+          emailSendService.sendTemporaryPasswordEmail(email, temporaryPassword);
+      
+      if (!emailResponse.getStatusCode().is2xxSuccessful()) {
+        return ResponseDto.emailSendError();
+      }
+      
+      String encodedPassword = passwordEncoder.encode(temporaryPassword);
+      userEntity.setPassword(encodedPassword);
+      userRepository.save(userEntity);
+      
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.databaseError();
+    }
+    
+    return ResponseDto.success(HttpStatus.OK);
+  }
 }
