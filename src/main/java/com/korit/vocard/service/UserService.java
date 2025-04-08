@@ -9,4 +9,5 @@ import com.korit.vocard.common.dto.response.user.GetSignInUserResponseDto;
 public interface UserService {
   ResponseEntity<? super GetSignInUserResponseDto> getSignInUser(String email);
   ResponseEntity<ResponseDto> patchUser(PatchUserRequestDto dto, String email);
+  ResponseEntity<ResponseDto> deleteUser(String email);
 }
