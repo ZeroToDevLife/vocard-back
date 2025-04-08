@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.korit.vocard.common.dto.request.auth.EmailAuthSendRequestDto;
 import com.korit.vocard.common.dto.request.auth.EmailAuthVerifyRequestDto;
 import com.korit.vocard.common.dto.request.auth.EmailCheckRequestDto;
+import com.korit.vocard.common.dto.request.auth.ResetPasswordRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignInRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
@@ -100,6 +101,20 @@ public class AuthController {
     @RequestBody @Valid EmailAuthVerifyRequestDto requestBody
   ){
     ResponseEntity<? super EmailAuthResponseDto> response = emailAuthService.verifyEmail(requestBody, requestBody.getEmail());
+    return response;
+  }
+
+  /**
+   * description: 비밀번호 재설정 요청을 처리합니다.
+   *
+   * @param requestBody {@link ResetPasswordRequestDto} 비밀번호 재설정 요청 정보
+   * @return {@link ResponseDto} 비밀번호 재설정 결과
+   */
+  @PostMapping("/reset-password")
+  public ResponseEntity<ResponseDto> resetPassword(
+    @RequestBody @Valid ResetPasswordRequestDto requestBody
+  ){
+    ResponseEntity<ResponseDto> response = authService.resetPassword(requestBody);
     return response;
   }
 
