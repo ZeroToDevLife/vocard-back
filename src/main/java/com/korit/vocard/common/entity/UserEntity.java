@@ -1,6 +1,7 @@
 package com.korit.vocard.common.entity;
 
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
+import com.korit.vocard.common.dto.request.user.PatchUserRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -92,5 +93,13 @@ public class UserEntity {
         this.nickname = dto.getNickname();
         this.isVerified = false;
     }
-    
+
+    /**
+     * description: 사용자 정보 업데이트
+     *
+     * @param dto {@link PatchUserRequestDto} 사용자 정보 수정 요청 정보
+     */
+    public void patch(PatchUserRequestDto dto) {
+        if (dto.getNickname() != null) this.nickname = dto.getNickname();
+    }
 }
