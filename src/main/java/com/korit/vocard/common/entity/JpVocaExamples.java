@@ -1,6 +1,4 @@
 package com.korit.vocard.common.entity;
-
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;

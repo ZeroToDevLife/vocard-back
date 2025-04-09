@@ -1,17 +1,23 @@
 package com.korit.vocard.common.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "termLevels")
+@Entity
 @Table(name = "term_levels")
 @Getter
 @Setter
@@ -23,9 +29,13 @@ public class TermLevels {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "book_id")
-  private Integer bookId;
+  @ManyToOne
+  @JoinColumn(name = "book_id")
+  private TermBooks termBooks;
 
+  @Column(name = "level")
   private String level;
-  
+
+  @OneToMany(mappedBy = "termLevels", cascade = CascadeType.ALL)
+  private List<TermDays> termDays;
 }
