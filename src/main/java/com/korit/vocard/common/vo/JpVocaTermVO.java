@@ -2,7 +2,7 @@ package com.korit.vocard.common.vo;
 
 import java.util.List;
 
-import com.korit.vocard.common.entity.TermDetailJpVoca;
+import com.korit.vocard.common.entity.TermDetailJpVocaEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class JpVocaTermVO {
         this.examples = examples;
     }
 
-    public static JpVocaTermVO from(TermDetailJpVoca entity) {
+    public static JpVocaTermVO from(TermDetailJpVocaEntity entity) {
         return JpVocaTermVO.builder()
                 .id(entity.getId())
                 .termsId(entity.getTerms().getId())

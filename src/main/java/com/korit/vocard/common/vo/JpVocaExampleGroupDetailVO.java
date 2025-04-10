@@ -1,6 +1,6 @@
 package com.korit.vocard.common.vo;
 
-import com.korit.vocard.common.entity.JpVocaExampleGroupDetail;
+import com.korit.vocard.common.entity.JpVocaExampleGroupDetailEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class JpVocaExampleGroupDetailVO {
         this.groupDetailMeaning = groupDetailMeaning;
     }
 
-    public static JpVocaExampleGroupDetailVO from(JpVocaExampleGroupDetail entity) {
+    public static JpVocaExampleGroupDetailVO from(JpVocaExampleGroupDetailEntity entity) {
         return JpVocaExampleGroupDetailVO.builder()
                 .id(entity.getId())
                 .groupId(entity.getJpVocaExampleGroup().getId())
