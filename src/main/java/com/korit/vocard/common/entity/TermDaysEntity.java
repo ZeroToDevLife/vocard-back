@@ -1,14 +1,14 @@
 package com.korit.vocard.common.entity;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,24 +16,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "term_books")
+@Table(name = "term_days")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TermBooks {
+public class TermDaysEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "language")
-  private String language;
+  @ManyToOne
+  @JoinColumn(name = "level_id")
+  private TermLevelsEntity termLevels;
 
-  @Column(name = "name")
-  private String name;
+  @Column(name = "day_number")
+  private Integer dayNumber;
 
-  @OneToMany(mappedBy = "termBooks", cascade = CascadeType.ALL)
-  private List<TermLevels> termLevels;
-
+  @OneToOne(mappedBy = "termDays", cascade = CascadeType.ALL)
+  private TermsEntity terms;
 }

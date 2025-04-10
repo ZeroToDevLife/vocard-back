@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpVocaExampleGroupDetail {
+public class JpVocaExampleGroupDetailEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class JpVocaExampleGroupDetail {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    private JpVocaExampleGroup jpVocaExampleGroup;
+    private JpVocaExampleGroupEntity jpVocaExampleGroup;
 
     @Column(name = "group_detail_example", columnDefinition = "TEXT")
     private String groupDetailExample;

@@ -3,14 +3,13 @@ package com.korit.vocard.common.entity;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,30 +17,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "jp_voca_example_group")
+@Table(name = "terms")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpVocaExampleGroup {
+public class TermsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @ManyToOne
-  @JoinColumn(name = "example_id")
-  private JpVocaExamples jpVocaExamples;
+  @OneToOne
+  @JoinColumn(name = "day_id")
+  private TermDaysEntity termDays;
 
-  @Column(name = "example_group")
-  private String exampleGroup;
+  @OneToMany(mappedBy = "terms", cascade = CascadeType.ALL)
+  private List<TermDetailJpVocaEntity> termDetailJpVoca;
 
-  @Column(name = "related_type")
-  private String relatedType;
+  @OneToMany(mappedBy = "terms", cascade = CascadeType.ALL)
+  private List<TermDetailJpKanjiEntity> termDetailJpKanji;
 
-  @Column(name = "related")
-  private String related;
+  @OneToMany(mappedBy = "terms", cascade = CascadeType.ALL)
+  private List<TermDetailEnEntity> termDetailEn;
 
-  @OneToMany(mappedBy = "jpVocaExampleGroup", cascade = CascadeType.ALL)
-  private List<JpVocaExampleGroupDetail> jpVocaExampleGroupDetail;
+  @OneToMany(mappedBy = "terms", cascade = CascadeType.ALL)
+  private List<TermDetailCnEntity> termDetailCn;
+  
 }

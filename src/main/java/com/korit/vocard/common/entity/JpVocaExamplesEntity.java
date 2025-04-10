@@ -1,5 +1,4 @@
 package com.korit.vocard.common.entity;
-
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -18,31 +17,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "term_detail_jp_voca")
+@Table(name = "jp_voca_examples")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TermDetailJpVoca {
+public class JpVocaExamplesEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "terms_id")
-  private Terms terms;
+  @JoinColumn(name = "term_detail_id")
+  private TermDetailJpVocaEntity termDetailJpVoca;
 
-  @Column(name = "word")
-  private String word;
+  @Column(name = "part_speech")
+  private String partSpeech;
 
-  @Column(name = "yomigana")
-  private String yomigana;
-
-  @Column(name = "meaning")
-  private String meaning;
-
-  @OneToMany(mappedBy = "termDetailJpVoca", cascade = CascadeType.ALL)
-  private Set<JpVocaExamples> jpVocaExamples;
+  @OneToMany(mappedBy = "jpVocaExamples", cascade = CascadeType.ALL)
+  private Set<JpVocaExampleGroupEntity> jpVocaExampleGroup;
 
 }

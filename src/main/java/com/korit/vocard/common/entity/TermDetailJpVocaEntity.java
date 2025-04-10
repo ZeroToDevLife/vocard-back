@@ -1,6 +1,6 @@
 package com.korit.vocard.common.entity;
 
-import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,24 +18,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "term_levels")
+@Table(name = "term_detail_jp_voca")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TermLevels {
+public class TermDetailJpVocaEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "book_id")
-  private TermBooks termBooks;
+  @JoinColumn(name = "terms_id")
+  private TermsEntity terms;
 
-  @Column(name = "level")
-  private String level;
+  @Column(name = "word")
+  private String word;
 
-  @OneToMany(mappedBy = "termLevels", cascade = CascadeType.ALL)
-  private List<TermDays> termDays;
+  @Column(name = "yomigana")
+  private String yomigana;
+
+  @Column(name = "meaning")
+  private String meaning;
+
+  @OneToMany(mappedBy = "termDetailJpVoca", cascade = CascadeType.ALL)
+  private Set<JpVocaExamplesEntity> jpVocaExamples;
+
 }
