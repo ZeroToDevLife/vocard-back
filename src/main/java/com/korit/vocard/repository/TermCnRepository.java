@@ -2,26 +2,18 @@ package com.korit.vocard.repository;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.korit.vocard.common.entity.TermDetailJpVocaEntity;
+import com.korit.vocard.common.entity.TermDetailCnEntity;
 
 @Repository
-public interface TermJpVocaRepository extends JpaRepository<TermDetailJpVocaEntity, Integer> {
+public interface TermCnRepository extends JpaRepository<TermDetailCnEntity, Integer> {
 
-    @EntityGraph(attributePaths = {
-        "terms",
-        "terms.termDays",
-        "jpVocaExamples",
-        "jpVocaExamples.jpVocaExampleGroup",
-        "jpVocaExamples.jpVocaExampleGroup.jpVocaExampleGroupDetail"
-    })
     @Query("""
-        SELECT td FROM TermDetailJpVocaEntity td 
+        SELECT td FROM TermDetailCnEntity td 
         JOIN td.terms t 
         JOIN t.termDays d 
         JOIN d.termLevels l 
@@ -31,7 +23,7 @@ public interface TermJpVocaRepository extends JpaRepository<TermDetailJpVocaEnti
         AND l.level = :level 
         AND d.dayNumber = :dayNumber
     """)
-    List<TermDetailJpVocaEntity> findTermDetailsByBookNameAndLevelAndDayNumber(
+    List<TermDetailCnEntity> findTermDetailsByBookNameAndLevelAndDayNumber(
         @Param("language") String language,
         @Param("bookName") String bookName,
         @Param("level") String level,

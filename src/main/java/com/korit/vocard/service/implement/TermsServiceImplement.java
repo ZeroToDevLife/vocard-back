@@ -1,5 +1,6 @@
 package com.korit.vocard.service.implement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -7,8 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.korit.vocard.common.dto.response.ResponseDto;
+import com.korit.vocard.common.dto.response.voca.GetCnTermResponseDto;
+import com.korit.vocard.common.dto.response.voca.GetEnTermResponseDto;
+import com.korit.vocard.common.dto.response.voca.GetJpKanjiResponseDto;
 import com.korit.vocard.common.dto.response.voca.GetJpVocaResponseDto;
+import com.korit.vocard.common.entity.TermDetailCnEntity;
+import com.korit.vocard.common.entity.TermDetailEnEntity;
+import com.korit.vocard.common.entity.TermDetailJpKanjiEntity;
 import com.korit.vocard.common.vo.JpVocaTermVO;
+import com.korit.vocard.repository.TermCnRepository;
+import com.korit.vocard.repository.TermEnRepository;
+import com.korit.vocard.repository.TermJpKanjiRepository;
 import com.korit.vocard.repository.TermJpVocaRepository;
 import com.korit.vocard.service.TermsService;
 
@@ -24,7 +34,9 @@ import lombok.RequiredArgsConstructor;
 public class TermsServiceImplement implements TermsService {
 
     private final TermJpVocaRepository termJpVocaRepository;
-
+    private final TermJpKanjiRepository termJpKanjiRepository;
+    private final TermEnRepository termEnRepository;
+    private final TermCnRepository termCnRepository;
     /**
      * description: 교재, 레벨, 일차에 해당하는 일본어 단어 목록을 조회합니다.
      * 
@@ -59,4 +71,62 @@ public class TermsServiceImplement implements TermsService {
 
         return ResponseEntity.status(HttpStatus.OK).body(new GetJpVocaResponseDto(terms));
     }
+
+    @Override
+    public ResponseEntity<? super GetJpKanjiResponseDto> getJpKanji(String language, String bookName, String level, int dayNumber) {
+
+        List<TermDetailJpKanjiEntity> termDetailJpKanjiEntities = new ArrayList<>(); 
+
+        try {
+
+            termDetailJpKanjiEntities = termJpKanjiRepository.findTermDetailsByBookNameAndLevelAndDayNumber(
+                language, bookName, level, dayNumber
+            );
+                       
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetJpKanjiResponseDto.success(termDetailJpKanjiEntities);
+    }
+
+    @Override
+    public ResponseEntity<? super GetEnTermResponseDto> getEnTerm(String language, String bookName, String level, int dayNumber) {
+
+        List<TermDetailEnEntity> termDetailEnEntities = new ArrayList<>(); 
+
+        try {
+
+            termDetailEnEntities = termEnRepository.findTermDetailsByBookNameAndLevelAndDayNumber(
+                language, bookName, level, dayNumber
+            );
+                       
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetEnTermResponseDto.success(termDetailEnEntities);
+    }
+
+    @Override
+    public ResponseEntity<? super GetCnTermResponseDto> getCnTerm(String language, String bookName, String level, int dayNumber) {
+
+        List<TermDetailCnEntity> termDetailCnEntities = new ArrayList<>(); 
+
+        try {
+
+            termDetailCnEntities = termCnRepository.findTermDetailsByBookNameAndLevelAndDayNumber(
+                language, bookName, level, dayNumber
+            );
+                       
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetCnTermResponseDto.success(termDetailCnEntities);
+    }
+    
 } 
