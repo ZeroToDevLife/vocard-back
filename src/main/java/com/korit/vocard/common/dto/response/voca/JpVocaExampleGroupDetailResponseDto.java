@@ -7,13 +7,11 @@ import lombok.Getter;
 @Getter
 public class JpVocaExampleGroupDetailResponseDto {
     private final Integer id;
-    private final Integer groupId;
     private final String groupDetailExample;
     private final String groupDetailMeaning;
 
     public JpVocaExampleGroupDetailResponseDto(JpVocaExampleGroupDetailVO vo) {
         this.id = vo.getId();
-        this.groupId = vo.getGroupId();
         this.groupDetailExample = vo.getGroupDetailExample();
         this.groupDetailMeaning = vo.getGroupDetailMeaning();
     }

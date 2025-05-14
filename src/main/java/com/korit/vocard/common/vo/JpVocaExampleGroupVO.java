@@ -12,31 +12,22 @@ public class JpVocaExampleGroupVO {
     private final Integer id;
     private final Integer exampleId;
     private final String exampleGroup;
-    private final String relatedType;
-    private final String related;
-    private final List<JpVocaExampleGroupDetailVO> details;
+    private final List<JpVocaExampleSubGroupVO> exampleSubGroups;
 
     @Builder
-    private JpVocaExampleGroupVO(Integer id, Integer exampleId, String exampleGroup, 
-            String relatedType, String related, List<JpVocaExampleGroupDetailVO> details) {
+    private JpVocaExampleGroupVO(Integer id, Integer exampleId, String exampleGroup, List<JpVocaExampleSubGroupVO> exampleSubGroups) {
         this.id = id;
         this.exampleId = exampleId;
         this.exampleGroup = exampleGroup;
-        this.relatedType = relatedType;
-        this.related = related;
-        this.details = details;
+        this.exampleSubGroups = exampleSubGroups;
     }
 
     public static JpVocaExampleGroupVO from(JpVocaExampleGroupEntity entity) {
         return JpVocaExampleGroupVO.builder()
                 .id(entity.getId())
-                .exampleId(entity.getJpVocaExamples().getId())
+                .exampleId(entity.getJpVocaExamples() != null ? entity.getJpVocaExamples().getId() : null)
                 .exampleGroup(entity.getExampleGroup())
-                .relatedType(entity.getRelatedType())
-                .related(entity.getRelated())
-                .details(entity.getJpVocaExampleGroupDetail().stream()
-                        .map(JpVocaExampleGroupDetailVO::from)
-                        .toList())
+                .exampleSubGroups(entity.getExampleSubGroups() != null ? entity.getExampleSubGroups().stream().map(JpVocaExampleSubGroupVO::from).toList() : List.of())
                 .build();
     }
 } 

@@ -73,9 +73,17 @@ public class WebSecurityConfig {
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       // description: 인가(Authorization) 설정
       .authorizeHttpRequests(request -> request
-        .requestMatchers("/api/v1/auth/**", "/api/v1/utils/**", "/api/v1/terms/**").permitAll()
+        .requestMatchers(
+          "/api/v1/auth/sign-in", 
+          "/api/v1/auth/sign-up", 
+          "/api/v1/auth/email-check",
+          "/api/v1/auth/reset-password",
+          "/api/v1/utils/**", 
+          "/api/v1/terms/**",
+          "/api/v1/books/**"
+        ).permitAll()
         .anyRequest().authenticated()
-      )
+)
       // description: 인증 실패 처리 설정
       .exceptionHandling(exception -> exception
         .authenticationEntryPoint(new AuthenticationFailEntryPoint())

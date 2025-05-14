@@ -17,11 +17,10 @@ public interface TermJpVocaRepository extends JpaRepository<TermDetailJpVocaEnti
         "terms",
         "terms.termDays",
         "jpVocaExamples",
-        "jpVocaExamples.jpVocaExampleGroup",
-        "jpVocaExamples.jpVocaExampleGroup.jpVocaExampleGroupDetail"
+        "jpVocaExamples.jpVocaExampleGroup"
     })
     @Query("""
-        SELECT td FROM TermDetailJpVocaEntity td 
+        SELECT DISTINCT td FROM TermDetailJpVocaEntity td 
         JOIN td.terms t 
         JOIN t.termDays d 
         JOIN d.termLevels l 

@@ -13,11 +13,13 @@ import lombok.Getter;
 public class GetSignInUserResponseDto extends ResponseDto {
   private String email;
   private String nickname;
+  private boolean isVerified;
 
   private GetSignInUserResponseDto(UserEntity userEntity) {
     super(ResponseType.SUCCESS);
     this.email = userEntity.getEmail();
     this.nickname = userEntity.getNickname();
+    this.isVerified = userEntity.isVerified();
   }
 
   public static ResponseEntity<GetSignInUserResponseDto> success (UserEntity userEntity) {

@@ -1,6 +1,7 @@
 package com.korit.vocard.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import com.korit.vocard.common.dto.request.auth.EmailAuthVerifyRequestDto;
 import com.korit.vocard.common.dto.request.auth.EmailCheckRequestDto;
 import com.korit.vocard.common.dto.request.auth.ResetPasswordRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignInRequestDto;
+import com.korit.vocard.common.dto.request.auth.SignOutRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.auth.EmailAuthResponseDto;
@@ -78,29 +80,33 @@ public class AuthController {
   
   /**
    * description: 이메일 인증 코드 전송 요청을 처리합니다.
+   * 인증된 사용자의 이메일은 토큰에서 자동으로 추출됩니다.
    *
-   * @param requestBody {@link EmailAuthSendRequestDto} 이메일 인증 코드 전송 요청 정보
    * @return {@link ResponseDto} 이메일 전송 결과
    */
   @PostMapping("/send-email")
   public ResponseEntity<ResponseDto> sendEmail(
-    @RequestBody @Valid EmailAuthSendRequestDto requestBody
+    @AuthenticationPrincipal String email
   ){
-    ResponseEntity<ResponseDto> response = emailAuthService.sendEmail(requestBody, requestBody.getEmail());
+    // 빈 DTO 생성
+    EmailAuthSendRequestDto requestBody = new EmailAuthSendRequestDto();
+    ResponseEntity<ResponseDto> response = emailAuthService.sendEmail(requestBody, email);
     return response;
   }
 
   /**
    * description: 이메일 인증 코드 확인 요청을 처리합니다.
+   * 인증된 사용자의 이메일은 토큰에서 자동으로 추출됩니다.
    *
    * @param requestBody {@link EmailAuthVerifyRequestDto} 이메일 인증 코드 확인 요청 정보
    * @return {@link EmailAuthResponseDto} 이메일 인증 결과
    */
   @PostMapping("/verify-email")
   public ResponseEntity<? super EmailAuthResponseDto> verifyEmail(
-    @RequestBody @Valid EmailAuthVerifyRequestDto requestBody
+    @RequestBody @Valid EmailAuthVerifyRequestDto requestBody,
+    @AuthenticationPrincipal String email
   ){
-    ResponseEntity<? super EmailAuthResponseDto> response = emailAuthService.verifyEmail(requestBody, requestBody.getEmail());
+    ResponseEntity<? super EmailAuthResponseDto> response = emailAuthService.verifyEmail(requestBody, email);
     return response;
   }
 
@@ -116,6 +122,17 @@ public class AuthController {
   ){
     ResponseEntity<ResponseDto> response = authService.resetPassword(requestBody);
     return response;
+  }
+
+  /**
+   * description: 로그아웃 요청을 처리합니다.
+   * 토큰은 Authorization 헤더에서 자동으로 추출됩니다.
+   *
+   * @return {@link ResponseDto} 로그아웃 결과
+   */
+  @PostMapping("/sign-out")
+  public ResponseEntity<ResponseDto> signOut() {
+    return authService.signOut(new SignOutRequestDto());
   }
 
 }

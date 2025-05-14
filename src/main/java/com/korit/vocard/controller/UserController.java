@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.korit.vocard.common.dto.request.user.ChangePasswordRequestDto;
 import com.korit.vocard.common.dto.request.user.PatchUserRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.user.GetSignInUserResponseDto;
@@ -48,6 +49,15 @@ public class UserController {
     @AuthenticationPrincipal String email
   ) {
     ResponseEntity<ResponseDto> response = userService.deleteUser(email);
+    return response;
+  }
+
+  @PatchMapping("/change-password")
+  public ResponseEntity<ResponseDto> changePassword(
+    @RequestBody @Valid ChangePasswordRequestDto requestBody,
+    @AuthenticationPrincipal String email
+  ) {
+    ResponseEntity<ResponseDto> response = userService.changePassword(requestBody, email);
     return response;
   }
 

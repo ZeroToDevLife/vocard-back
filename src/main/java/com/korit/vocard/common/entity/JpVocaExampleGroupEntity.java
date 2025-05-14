@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,12 +37,19 @@ public class JpVocaExampleGroupEntity {
   @Column(name = "example_group")
   private String exampleGroup;
 
-  @Column(name = "related_type")
-  private String relatedType;
+  @OneToMany(mappedBy = "exampleGroup", cascade = CascadeType.ALL)
+  @OrderBy("exampleSubGroup ASC")
+  private List<JpVocaExampleSubGroupEntity> exampleSubGroups;
 
-  @Column(name = "related")
-  private String related;
+  public Integer getId() {
+    return id;
+  }
 
-  @OneToMany(mappedBy = "jpVocaExampleGroup", cascade = CascadeType.ALL)
-  private List<JpVocaExampleGroupDetailEntity> jpVocaExampleGroupDetail;
+  public JpVocaExamplesEntity getJpVocaExamples() {
+    return jpVocaExamples;
+  }
+
+  public String getExampleGroup() {
+    return exampleGroup;
+  }
 }

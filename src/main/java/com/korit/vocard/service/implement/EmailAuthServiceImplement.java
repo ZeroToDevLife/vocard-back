@@ -96,18 +96,17 @@ public class EmailAuthServiceImplement implements EmailAuthService {
     Integer code = Integer.valueOf(dto.getCode());
     UserEntity userEntity = null;
 
-
     try {
-
       EmailAuthEntity emailAuthEntity = emailAuthRepository.findByEmail(email);
-      if (emailAuthEntity == null || !emailAuthEntity.getCode().equals(code)) return ResponseDto.validationFail();
+      if (emailAuthEntity == null || !emailAuthEntity.getCode().equals(code)) {
+        return ResponseDto.emailVerificationFail();
+      }
    
       userEntity = userRepository.findByEmail(email);
       if (userEntity == null) return ResponseDto.validationFail();
 
       userEntity.setVerified(true);
       userRepository.save(userEntity);
-      
         
     } catch (Exception exception) {
       exception.printStackTrace();

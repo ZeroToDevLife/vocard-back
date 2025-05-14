@@ -146,4 +146,14 @@ public class ResponseDto {
     ResponseDto body = new ResponseDto(ResponseType.DATABASE_ERROR);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
   }
+
+  /**
+   * description: 리소스를 찾을 수 없음 응답을 생성합니다.
+   *
+   * @return {@link HttpStatus#NOT_FOUND} (404) 응답
+   */
+  public static ResponseEntity<ResponseDto> notFound() {
+    ResponseDto body = new ResponseDto(ResponseType.NOT_FOUND);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+  }
 }

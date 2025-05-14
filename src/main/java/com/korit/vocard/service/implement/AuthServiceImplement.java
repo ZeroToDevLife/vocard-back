@@ -5,10 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.korit.vocard.common.dto.request.auth.EmailCheckRequestDto;
 import com.korit.vocard.common.dto.request.auth.ResetPasswordRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignInRequestDto;
+import com.korit.vocard.common.dto.request.auth.SignOutRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.auth.SignInResponseDto;
@@ -16,6 +19,7 @@ import com.korit.vocard.common.dto.response.utils.GetTemporaryPasswordResponseDt
 import com.korit.vocard.common.dto.response.utils.SendTemporaryPasswordEmailResponseDto;
 import com.korit.vocard.common.entity.UserEntity;
 import com.korit.vocard.provider.JwtProvider;
+import com.korit.vocard.repository.BlacklistTokenRepository;
 import com.korit.vocard.repository.UserRepository;
 import com.korit.vocard.service.AuthService;
 import com.korit.vocard.service.EmailSendService;
@@ -36,6 +40,7 @@ public class AuthServiceImplement implements AuthService{
   private final JwtProvider jwtProvider;
   private final EmailSendService emailSendService;
   private final PasswordCreateService passwordCreateService;
+  private final BlacklistTokenRepository blacklistTokenRepository;
   private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   /**
@@ -199,5 +204,55 @@ public class AuthServiceImplement implements AuthService{
     }
     
     return ResponseDto.success(HttpStatus.OK);
+  }
+
+  /**
+   * description: 로그아웃 처리
+   * 
+   * <p>
+   * <ul>
+   * <li>토큰 검증</li>
+   * <li>토큰 만료 시간 계산</li>
+   * <li>블랙리스트에 토큰 추가</li>
+   * </ul>
+   * </p>
+   *
+   * @param dto {@link SignOutRequestDto} 로그아웃 요청 정보
+   * @return 성공 시 {@link HttpStatus#OK} (200), 실패 시 오류 응답
+   */
+  @Override
+  public ResponseEntity<ResponseDto> signOut(SignOutRequestDto dto) {
+    try {
+      // 현재 요청의 토큰 가져오기
+      String token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+          .getRequest().getHeader("Authorization");
+      
+      if (token == null || !token.startsWith("Bearer ")) {
+        return ResponseDto.validationFail();
+      }
+      
+      // "Bearer " 제거
+      token = token.substring(7);
+      
+      // 토큰 검증
+      String email = jwtProvider.validate(token);
+      if (email == null) {
+        return ResponseDto.validationFail();
+      }
+      
+      // 토큰 만료 시간 계산
+      long remainingTime = jwtProvider.getExpirationTime(token);
+      if (remainingTime <= 0) {
+        return ResponseDto.validationFail();
+      }
+      
+      // 블랙리스트에 토큰 추가
+      blacklistTokenRepository.addToBlacklist(token, remainingTime);
+      
+      return ResponseDto.success(HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseDto.databaseError();
+    }
   }
 }

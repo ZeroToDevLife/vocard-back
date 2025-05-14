@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import com.korit.vocard.common.dto.request.auth.EmailCheckRequestDto;
 import com.korit.vocard.common.dto.request.auth.ResetPasswordRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignInRequestDto;
+import com.korit.vocard.common.dto.request.auth.SignOutRequestDto;
 import com.korit.vocard.common.dto.request.auth.SignUpRequestDto;
 import com.korit.vocard.common.dto.response.ResponseDto;
 import com.korit.vocard.common.dto.response.auth.SignInResponseDto;
@@ -47,4 +48,12 @@ public interface AuthService {
    * @return 성공 시 {@link HttpStatus#OK} (200), 실패 시 오류 응답
    */
   ResponseEntity<ResponseDto> resetPassword(ResetPasswordRequestDto dto);
+
+  /**
+   * description: 로그아웃 처리
+   *
+   * @param dto {@link SignOutRequestDto} 로그아웃 요청 정보
+   * @return 성공 시 {@link HttpStatus#OK} (200), 실패 시 오류 응답
+   */
+  ResponseEntity<ResponseDto> signOut(SignOutRequestDto dto);
 }

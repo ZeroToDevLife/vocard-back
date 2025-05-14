@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -108,6 +109,31 @@ public class JwtProvider {
 
     return email;
 
+  }
+
+  /**
+   * description: 토큰의 만료까지 남은 시간을 초 단위로 반환
+   *
+   * @param token JWT 토큰
+   * @return 만료까지 남은 시간(초), 만료되었거나 유효하지 않은 토큰이면 0
+   */
+  public long getExpirationTime(String token) {
+    try {
+      SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+      
+      Claims claims = Jwts.parser()
+        .verifyWith(key)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
+      
+      Date expiration = claims.getExpiration();
+      Date now = new Date();
+      
+      return Math.max(0, (expiration.getTime() - now.getTime()) / 1000);
+    } catch (Exception e) {
+      return 0;
+    }
   }
 
 }

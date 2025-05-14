@@ -112,7 +112,20 @@ public enum ResponseType {
    * </ul>
    * </p>
    */ 
-  DATABASE_ERROR("DBE", "Database Error.");
+  DATABASE_ERROR("DBE", "Database Error."),
+
+  /** 
+   * description: 리소스를 찾을 수 없음
+   * 
+   * <p>
+   * <ul>
+   * <li>코드: {@code "NF"}</li>
+   * <li>메시지: {@code "Not Found."}</li>
+   * <li>HTTP 상태: {@link org.springframework.http.HttpStatus#NOT_FOUND}</li>
+   * </ul>
+   * </p>
+   */ 
+  NOT_FOUND("NF", "Not Found.");
 
   /** 
    * description: API 응답의 상태를 나타내는 코드값

@@ -11,18 +11,12 @@ public class JpVocaExampleGroupResponseDto {
     private final Integer id;
     private final Integer exampleId;
     private final String exampleGroup;
-    private final String relatedType;
-    private final String related;
-    private final List<JpVocaExampleGroupDetailResponseDto> details;
+    private final List<JpVocaExampleSubGroupResponseDto> exampleSubGroups;
 
     public JpVocaExampleGroupResponseDto(JpVocaExampleGroupVO vo) {
         this.id = vo.getId();
         this.exampleId = vo.getExampleId();
         this.exampleGroup = vo.getExampleGroup();
-        this.relatedType = vo.getRelatedType();
-        this.related = vo.getRelated();
-        this.details = vo.getDetails().stream()
-                .map(JpVocaExampleGroupDetailResponseDto::new)
-                .toList();
+        this.exampleSubGroups = vo.getExampleSubGroups().stream().map(JpVocaExampleSubGroupResponseDto::new).toList();
     }
 } 
