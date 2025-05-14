@@ -25,4 +25,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String>{
    * @return 해당 이메일을 가진 사용자 엔티티, 없으면 {@code null}
    */
   UserEntity findByEmail(String email);
+
+   /**
+   * description: 이메일과 인증 상태로 사용자 정보 조회
+   * 
+   * @param email 조회할 이메일
+   * @param isVerified 인증 상태 ({@code true}: 인증 완료, {@code false}: 미인증)
+   * @return 조건에 맞는 사용자 엔티티, 없으면 {@code null}
+   */
+  UserEntity findByEmailAndIsVerified(String email, boolean isVerified);
 }

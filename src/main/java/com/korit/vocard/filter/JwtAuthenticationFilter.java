@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.korit.vocard.provider.JwtProvider;
+import com.korit.vocard.repository.BlacklistTokenRepository;
 import com.korit.vocard.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -32,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtProvider jwtProvider;
   private final UserRepository userRepository;
+  private final BlacklistTokenRepository blacklistTokenRepository;
 
   /**
    * description: JWT 토큰을 추출하고 유효한 경우 인증 컨텍스트를 설정합니다.
@@ -62,6 +64,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
       }
 
+      // 블랙리스트 체크를 토큰 검증 전에 수행
+      if (blacklistTokenRepository.isBlacklisted(token)) {
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{ \"code\": \"AF\", \"message\": \"Auth Fail.\" }");
+        return;
+      }
+
       String email = jwtProvider.validate(token);
       if (email == null) {
         filterChain.doFilter(request, response);
@@ -75,12 +85,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
 
       setContext(email, request);
+      filterChain.doFilter(request, response);
 
     } catch(Exception exception) {
       exception.printStackTrace();
+      filterChain.doFilter(request, response);
     }
-
-    filterChain.doFilter(request, response);
 
   }
 
